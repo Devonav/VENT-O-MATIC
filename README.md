@@ -111,8 +111,9 @@ Each line is one test case. `ok` means it passed. The suite spins up a real HTTP
 - Only accepts US quarters, one at a time (`{"coin": 1}`)
 - Each item costs **2 quarters**
 - 3 beverages available (IDs `0`, `1`, `2`), 5 of each to start
-- Only one item dispensed per transaction
+- Accepts more than the purchase price but dispenses only one item per transaction
 - Any unused quarters are returned as change via `X-Coins`
+- All requests and responses use `Content-Type: application/json`
 
 ---
 
