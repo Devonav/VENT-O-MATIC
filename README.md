@@ -8,11 +8,11 @@ A beverage vending machine simulator exposed as an HTTP API. Built with Python s
 flowchart LR
     Client([Client])
 
-    Client -->|PUT /| InsertCoin
-    Client -->|DELETE /| Cancel
-    Client -->|GET /inventory| ListInv
-    Client -->|GET /inventory/:id| GetItem
-    Client -->|PUT /inventory/:id| P1
+    Client ----->|PUT /| InsertCoin
+    Client ----->|DELETE /| Cancel
+    Client ----->|GET /inventory| ListInv
+    Client ----->|GET /inventory/:id| GetItem
+    Client ----->|PUT /inventory/:id| P1
 
     InsertCoin[Accept coin] -->|204 X-Coins:total| Client
     Cancel[Return coins]    -->|204 X-Coins:returned| Client
