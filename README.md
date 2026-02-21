@@ -108,32 +108,35 @@ All 20 tests should pass in under a second with no setup required.
 
 ### Happy path — insert 2 coins, buy item 0
 
+**Command** — insert first coin:
 ```bash
-# Insert first coin
 curl -X PUT http://localhost:8080/ \
   -H "Content-Type: application/json" \
   -d '{"coin": 1}' -i
 ```
+**Expected response:**
 ```
 HTTP/1.0 204 No Content
 X-Coins: 1
 ```
 
+**Command** — insert second coin:
 ```bash
-# Insert second coin
 curl -X PUT http://localhost:8080/ \
   -H "Content-Type: application/json" \
   -d '{"coin": 1}' -i
 ```
+**Expected response:**
 ```
 HTTP/1.0 204 No Content
 X-Coins: 2
 ```
 
+**Command** — purchase item 0:
 ```bash
-# Purchase item 0
 curl -X PUT http://localhost:8080/inventory/0 -i
 ```
+**Expected response:**
 ```
 HTTP/1.0 200 OK
 X-Coins: 0
@@ -146,13 +149,24 @@ X-Inventory-Remaining: 4
 
 ### Insert extra coins — change is returned
 
+**Command** — reset state from previous example:
 ```bash
-# Insert 3 coins, buy item 1 (costs 2) — 1 quarter returned as change
+curl -X DELETE http://localhost:8080/ -i
+```
+**Expected response:**
+```
+HTTP/1.0 204 No Content
+X-Coins: 0
+```
+
+**Command** — insert 3 coins, buy item 1 (costs 2), get 1 quarter back as change:
+```bash
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/inventory/1 -i
 ```
+**Expected response** (last command):
 ```
 HTTP/1.0 200 OK
 X-Coins: 1
@@ -165,21 +179,33 @@ X-Inventory-Remaining: 4
 
 ### Insufficient funds (403)
 
+**Command** — reset state from previous example:
 ```bash
-# Insert only 1 coin
+curl -X DELETE http://localhost:8080/ -i
+```
+**Expected response:**
+```
+HTTP/1.0 204 No Content
+X-Coins: 0
+```
+
+**Command** — insert only 1 coin:
+```bash
 curl -X PUT http://localhost:8080/ \
   -H "Content-Type: application/json" \
   -d '{"coin": 1}' -i
 ```
+**Expected response:**
 ```
 HTTP/1.0 204 No Content
 X-Coins: 1
 ```
 
+**Command** — try to buy with insufficient funds:
 ```bash
-# Try to buy — not enough coins
 curl -X PUT http://localhost:8080/inventory/1 -i
 ```
+**Expected response:**
 ```
 HTTP/1.0 403 Forbidden
 X-Coins: 1
@@ -189,20 +215,33 @@ X-Coins: 1
 
 ### Cancel — return all inserted coins
 
+**Command** — reset state from previous example:
 ```bash
-# Insert a coin, then change your mind
+curl -X DELETE http://localhost:8080/ -i
+```
+**Expected response:**
+```
+HTTP/1.0 204 No Content
+X-Coins: 0
+```
+
+**Command** — insert a coin, then change your mind:
+```bash
 curl -X PUT http://localhost:8080/ \
   -H "Content-Type: application/json" \
   -d '{"coin": 1}' -i
 ```
+**Expected response:**
 ```
 HTTP/1.0 204 No Content
 X-Coins: 1
 ```
 
+**Command** — cancel and return coins:
 ```bash
 curl -X DELETE http://localhost:8080/ -i
 ```
+**Expected response:**
 ```
 HTTP/1.0 204 No Content
 X-Coins: 1
@@ -212,19 +251,22 @@ X-Coins: 1
 
 ### Out of stock (404)
 
+**Command** — deplete item 2 (5 purchases):
 ```bash
-# Deplete item 2 (5 purchases)
 for i in 1 2 3 4 5; do
   curl -s -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' > /dev/null
   curl -s -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' > /dev/null
   curl -s -X PUT http://localhost:8080/inventory/2 > /dev/null
 done
+```
 
-# Insert coins and try to buy item 2 — now out of stock
+**Command** — insert 2 coins and try to buy item 2 — now out of stock:
+```bash
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/inventory/2 -i
 ```
+**Expected response** (last command):
 ```
 HTTP/1.0 404 Not Found
 X-Coins: 2
@@ -234,16 +276,20 @@ X-Coins: 2
 
 ### Check inventory
 
+**Command** — get all item quantities:
 ```bash
 curl http://localhost:8080/inventory
 ```
+**Expected response:**
 ```
 [5, 5, 4]
 ```
 
+**Command** — get quantity for a single item:
 ```bash
 curl http://localhost:8080/inventory/2
 ```
+**Expected response:**
 ```
 4
 ```
