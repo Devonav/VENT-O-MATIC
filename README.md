@@ -162,3 +162,25 @@ curl http://localhost:8080/inventory
 curl http://localhost:8080/inventory/2
 # 4
 ```
+
+---
+
+## Design Decisions
+
+**No external dependencies.**
+The spec asked to avoid reimplementing HTTP or string-concatenating JSON, but also to minimize dependencies. Python's `http.server` and `json` modules hit that balance exactly — HTTP is handled by `BaseHTTPRequestHandler`, and JSON is serialized with `json.dumps()` / parsed with `json.loads()`.
+
+**`ThreadingHTTPServer` + `threading.Lock` for concurrency.**
+`ThreadingHTTPServer` spawns a new thread per request, which means multiple clients can hit the server simultaneously. A single module-level `_lock` guards all reads and writes to `_state`, ensuring coin counts and inventory quantities are always consistent. The entire purchase decision (check stock → check funds → decrement) happens inside one `with _lock:` block so there's no window for a race condition between two concurrent buyers.
+
+**Error priority: 404 before 403.**
+When a purchase is attempted, out-of-stock is checked before insufficient funds. This matches the spec's footnote ordering and makes physical sense — the machine should tell you it's empty before asking for more money.
+
+**`_send_error_plain` instead of `send_error()`.**
+The stdlib's `BaseHTTPRequestHandler.send_error()` appends an HTML body to every error response. The spec defines clean, header-only error responses, so we bypass it entirely and write the status + headers directly.
+
+**`allow_reuse_address` as a class attribute.**
+`SO_REUSEADDR` must be set on the socket before `bind()` is called. Because `ThreadingHTTPServer.__init__` calls `bind()` immediately, the flag has to live as a class attribute on a subclass rather than being set on the instance after construction. This lets the server restart immediately without an "Address already in use" error.
+
+**`{"quantity": 1}` in the purchase response body.**
+The spec defines `quantity` as "number of items vended" in the transaction — always 1, since the machine dispenses a single beverage per transaction. The remaining stock after purchase is communicated separately via `X-Inventory-Remaining`.
