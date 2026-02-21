@@ -113,37 +113,55 @@ All 20 tests should pass in under a second with no setup required.
 curl -X PUT http://localhost:8080/ \
   -H "Content-Type: application/json" \
   -d '{"coin": 1}' -i
-# HTTP/1.0 204 No Content
-# X-Coins: 1
+```
+```
+HTTP/1.0 204 No Content
+X-Coins: 1
+```
 
+```bash
 # Insert second coin
 curl -X PUT http://localhost:8080/ \
   -H "Content-Type: application/json" \
   -d '{"coin": 1}' -i
-# HTTP/1.0 204 No Content
-# X-Coins: 2
+```
+```
+HTTP/1.0 204 No Content
+X-Coins: 2
+```
 
+```bash
 # Purchase item 0
 curl -X PUT http://localhost:8080/inventory/0 -i
-# HTTP/1.0 200 OK
-# X-Coins: 0
-# X-Inventory-Remaining: 4
-# {"quantity": 1}
 ```
+```
+HTTP/1.0 200 OK
+X-Coins: 0
+X-Inventory-Remaining: 4
+
+{"quantity": 1}
+```
+
+---
 
 ### Insert extra coins — change is returned
 
 ```bash
-# Insert 3 coins, buy item 1 (costs 2) → 1 quarter back
+# Insert 3 coins, buy item 1 (costs 2) — 1 quarter returned as change
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/inventory/1 -i
-# HTTP/1.0 200 OK
-# X-Coins: 1
-# X-Inventory-Remaining: 4
-# {"quantity": 1}
 ```
+```
+HTTP/1.0 200 OK
+X-Coins: 1
+X-Inventory-Remaining: 4
+
+{"quantity": 1}
+```
+
+---
 
 ### Insufficient funds (403)
 
@@ -152,12 +170,22 @@ curl -X PUT http://localhost:8080/inventory/1 -i
 curl -X PUT http://localhost:8080/ \
   -H "Content-Type: application/json" \
   -d '{"coin": 1}' -i
+```
+```
+HTTP/1.0 204 No Content
+X-Coins: 1
+```
 
+```bash
 # Try to buy — not enough coins
 curl -X PUT http://localhost:8080/inventory/1 -i
-# HTTP/1.0 403 Forbidden
-# X-Coins: 1
 ```
+```
+HTTP/1.0 403 Forbidden
+X-Coins: 1
+```
+
+---
 
 ### Cancel — return all inserted coins
 
@@ -166,11 +194,21 @@ curl -X PUT http://localhost:8080/inventory/1 -i
 curl -X PUT http://localhost:8080/ \
   -H "Content-Type: application/json" \
   -d '{"coin": 1}' -i
-
-curl -X DELETE http://localhost:8080/ -i
-# HTTP/1.0 204 No Content
-# X-Coins: 1
 ```
+```
+HTTP/1.0 204 No Content
+X-Coins: 1
+```
+
+```bash
+curl -X DELETE http://localhost:8080/ -i
+```
+```
+HTTP/1.0 204 No Content
+X-Coins: 1
+```
+
+---
 
 ### Out of stock (404)
 
@@ -186,18 +224,28 @@ done
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/ -H "Content-Type: application/json" -d '{"coin": 1}' -i
 curl -X PUT http://localhost:8080/inventory/2 -i
-# HTTP/1.0 404 Not Found
-# X-Coins: 2   (coins are kept until you cancel or buy something else)
 ```
+```
+HTTP/1.0 404 Not Found
+X-Coins: 2
+```
+
+---
 
 ### Check inventory
 
 ```bash
 curl http://localhost:8080/inventory
-# [5, 5, 4]
+```
+```
+[5, 5, 4]
+```
 
+```bash
 curl http://localhost:8080/inventory/2
-# 4
+```
+```
+4
 ```
 
 ---
