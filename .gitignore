@@ -14,8 +14,7 @@ env/
 .vscode/
 .idea/
 
-# Claude Code session data
-.claude/
+
 
 # Assessment PDF (not needed in repo)
 *.pdf
