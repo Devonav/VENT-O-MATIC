@@ -104,8 +104,6 @@ OK
 
 Each line is one test case. `ok` means it passed. The suite spins up a real HTTP server on port 18080 for the duration of the run — no mocking — so every test exercises the full request/response cycle. A summary at the bottom shows the total count and overall result. All 20 must pass before submitting.
 
-All 20 tests should pass in under a second with no setup required.
-
 ---
 
 ## Vending Machine Rules
@@ -308,13 +306,15 @@ X-Coins: 2
 
 ### Check inventory
 
+> Note: the values below reflect running all examples above in order (item 2 fully depleted). On a fresh server start you will see `[5, 5, 5]` and `5`.
+
 **Command** — get all item quantities:
 ```bash
 curl http://localhost:8080/inventory
 ```
 **Expected response:**
 ```
-[5, 5, 4]
+[5, 5, 0]
 ```
 
 **Command** — get quantity for a single item:
@@ -323,7 +323,7 @@ curl http://localhost:8080/inventory/2
 ```
 **Expected response:**
 ```
-4
+0
 ```
 
 ---
