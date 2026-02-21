@@ -72,6 +72,38 @@ Stop it with `Ctrl+C`.
 python3 -m unittest test_app -v
 ```
 
+The `-v` flag prints each test by name as it runs. You'll see output like this:
+
+```
+test_cancel_resets_coin_count ... ok
+test_cancel_returns_coins ... ok
+test_cancel_with_no_coins ... ok
+test_get_inventory_after_purchase ... ok
+test_get_inventory_initial ... ok
+test_get_item_invalid_id ... ok
+test_get_item_quantity ... ok
+test_happy_path_purchase ... ok
+test_insert_one_coin ... ok
+test_insert_two_coins ... ok
+test_insert_zero_coin_noop ... ok
+test_insufficient_funds_one_coin ... ok
+test_insufficient_funds_zero_coins ... ok
+test_inventory_decrements_correctly ... ok
+test_out_of_stock_checked_before_insufficient_funds ... ok
+test_out_of_stock_returns_404 ... ok
+test_purchase_invalid_item_id ... ok
+test_purchase_with_change ... ok
+test_unknown_get_route ... ok
+test_unknown_put_route ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.5s
+
+OK
+```
+
+Each line is one test case. `ok` means it passed. The suite spins up a real HTTP server on port 18080 for the duration of the run — no mocking — so every test exercises the full request/response cycle. A summary at the bottom shows the total count and overall result. All 20 must pass before submitting.
+
 All 20 tests should pass in under a second with no setup required.
 
 ---
