@@ -14,22 +14,22 @@ flowchart LR
     Client -->|GET /inventory/:id| GetItem
     Client -->|PUT /inventory/:id| P1
 
-    InsertCoin[Accept coin] -->|204  X-Coins: total| Client
-    Cancel[Return coins]    -->|204  X-Coins: returned| Client
-    ListInv[List inventory] -->|200  array of ints| Client
-    GetItem[Get item qty]   -->|200  integer| Client
+    InsertCoin[Accept coin] -->|204 X-Coins:total| Client
+    Cancel[Return coins]    -->|204 X-Coins:returned| Client
+    ListInv[List inventory] -->|200 array of ints| Client
+    GetItem[Get item qty]   -->|200 integer| Client
 
-    subgraph Purchase [Purchase  —  runs under threading.Lock]
+    subgraph Purchase [Purchase - runs under threading.Lock]
         direction TB
         P1{In stock?}
         P2{coins >= 2?}
         P3[Dispense item]
 
-        P1 -->|No|  R404[404  X-Coins: kept]
+        P1 -->|No| R404[404 X-Coins:kept]
         P1 -->|Yes| P2
-        P2 -->|No|  R403[403  X-Coins: 0 or 1]
+        P2 -->|No| R403[403 X-Coins:0or1]
         P2 -->|Yes| P3
-        P3 -->      R200[200  X-Coins: change  ·  X-Inventory-Remaining: qty]
+        P3 --> R200[200 X-Coins:change X-Inventory-Remaining:qty]
     end
 
     R404 --> Client
