@@ -4,6 +4,8 @@ A beverage vending machine simulator exposed as an HTTP API. Built with Python s
 
 ## How It Works
 
+The diagram below shows every route the server exposes and how a request flows through the system. Simple reads (`GET`) and coin operations (`PUT /`, `DELETE /`) resolve immediately against shared state. A purchase (`PUT /inventory/:id`) runs through a two-step decision tree — out-of-stock is checked before insufficient funds — with all state mutations protected by a `threading.Lock` to keep concurrent requests safe.
+
 ```mermaid
 flowchart LR
     Client([Client])
