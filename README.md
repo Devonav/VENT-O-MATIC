@@ -1,6 +1,6 @@
 # Vend-O-Matic
 
-A beverage vending machine simulator exposed as an HTTP API. Built with Python stdlib only — no external dependencies.
+A beverage vending machine simulator exposed as an HTTP API. Built with Python stdlib only — no external dependencies
 
 ## How It Works
 
